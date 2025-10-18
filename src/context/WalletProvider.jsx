@@ -1,22 +1,48 @@
-// src/context/WalletContext.jsx
 import React, { createContext, useContext, useState } from 'react';
-import { exchangeRates } from '../components/ExchnageRates/ExchangeRates';
+import { exchangeRates} from "../components/ExchnageRates/ExchangeRates"
+import { saveToStorage, getFromStorage } from '../utils/Localstorage';
+
 const WalletContext = createContext();
 
 export const WalletProvider = ({ children }) => {
-  const [balances, setBalances] = useState({
+  const [balances, setBalances] = useState(() =>
+    getFromStorage('balances', {
+      USD: 100,
+      EUR: 500,
+      XAF: 10000,
+    })
+  );
+
+  const resetWallet = () => {
+  const defaultBalances = {
     USD: 100,
     EUR: 500,
     XAF: 10000,
-  });
+  };
 
-  const [defaultCurrency, setDefaultCurrency] = useState('USD');
+  setBalances(defaultBalances);
+  _setDefaultCurrency('USD');
+  saveToStorage('balances', defaultBalances);
+  saveToStorage('defaultCurrency', 'USD');
+};
+
+
+  const [defaultCurrency, _setDefaultCurrency] = useState(() =>
+    getFromStorage('defaultCurrency', 'USD')
+  );
+
+  const setDefaultCurrency = (currency) => {
+    _setDefaultCurrency(currency);
+    saveToStorage('defaultCurrency', currency);
+  };
 
   const deposit = (currency, amount) => {
-    setBalances(prev => ({
-      ...prev,
-      [currency]: prev[currency] + Number(amount),
-    }));
+    const newBalances = {
+      ...balances,
+      [currency]: balances[currency] + Number(amount),
+    };
+    setBalances(newBalances);
+    saveToStorage('balances', newBalances);
   };
 
   const exchange = (from, to, amount) => {
@@ -25,11 +51,14 @@ export const WalletProvider = ({ children }) => {
 
     if (balances[from] < amount) return;
 
-    setBalances(prev => ({
-      ...prev,
-      [from]: prev[from] - amount,
-      [to]: prev[to] + converted,
-    }));
+    const newBalances = {
+      ...balances,
+      [from]: balances[from] - amount,
+      [to]: balances[to] + converted,
+    };
+
+    setBalances(newBalances);
+    saveToStorage('balances', newBalances);
   };
 
   const totalInDefault = () => {
@@ -39,14 +68,17 @@ export const WalletProvider = ({ children }) => {
   };
 
   return (
-    <WalletContext.Provider value={{
-      balances,
-      defaultCurrency,
-      deposit,
-      exchange,
-      setDefaultCurrency,
-      totalInDefault,
-    }}>
+    <WalletContext.Provider
+      value={{
+        balances,
+        defaultCurrency,
+        deposit,
+        exchange,
+        setDefaultCurrency,
+        totalInDefault,
+        resetWallet
+      }}
+    >
       {children}
     </WalletContext.Provider>
   );

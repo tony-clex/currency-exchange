@@ -1,4 +1,3 @@
-// src/data/exchangeRates.js
 export const exchangeRates = {
   USD: { USD: 1, EUR: 0.806, XAF: 600 },
   EUR: { USD: 1.24, EUR: 1, XAF: 745 },
