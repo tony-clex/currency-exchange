@@ -3,7 +3,7 @@ import { WalletProvider } from './context/WalletProvider';
 import WalletOverview from './components/WalletOverview/WalletOverview';
 import DepositForm from './components/DepositForm/DepositForm';
 import CurrencySelector from './components/CurrencySelector/CurrencySelector';
-import ExchangeForm from './components/ExchangeForm/ExchangeForm';  // <- Add this line
+import ExchangeForm from './components/ExchangeForm/ExchangeForm';  
 
 const App = () => {
   return (
@@ -12,7 +12,7 @@ const App = () => {
         <h1>Currency Exchange Wallet</h1>
         <CurrencySelector />
         <WalletOverview />
-        <ExchangeForm />  {/* now recognized */}
+        <ExchangeForm />  {}
         <DepositForm />
       </div>
     </WalletProvider>
